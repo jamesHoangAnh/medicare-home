@@ -1,0 +1,1366 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediCare Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              medical: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                500: "#0ea5e9",
+                600: "#0284c7",
+              },
+              teal: { 500: "#14b8a6", 600: "#0d9488" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .fade-in {
+        animation: fadeIn 0.3s;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .sidebar-link.active {
+        background-color: #e0f2fe;
+        color: #0284c7;
+        border-right: 3px solid #0284c7;
+      }
+      .input-error {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800 font-sans">
+    <!-- AUTH SCREEN -->
+    <div
+      id="authScreen"
+      class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-medical-50 to-teal-50"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full grid md:grid-cols-2"
+      >
+        <div
+          class="bg-gradient-to-br from-medical-600 to-teal-600 p-8 text-white flex flex-col justify-center"
+        >
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"
+            >
+              <i class="fas fa-heartbeat text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold">MediCare Home</h1>
+          </div>
+          <h2 class="text-xl font-semibold mb-3">Chăm sóc sức khỏe tại nhà</h2>
+          <ul class="space-y-2 text-sm text-medical-100">
+            <li>
+              <i class="fas fa-check-circle mr-2"></i>Tư vấn Video Call 24/7
+            </li>
+            <li>
+              <i class="fas fa-check-circle mr-2"></i>Đặt lịch khám tại nhà
+            </li>
+            <li><i class="fas fa-check-circle mr-2"></i>Thanh toán VietQR</li>
+          </ul>
+        </div>
+        <div class="p-8 md:p-10">
+          <div id="loginView">
+            <h2 class="text-2xl font-bold mb-2">Đăng nhập</h2>
+            <div class="space-y-4 mt-6">
+              <input
+                id="loginPhone"
+                type="tel"
+                placeholder="Số điện thoại"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl"
+              />
+              <input
+                id="loginPass"
+                type="password"
+                placeholder="Mật khẩu"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl"
+              />
+              <div
+                id="loginError"
+                class="hidden bg-red-50 text-red-600 p-3 rounded-xl text-sm"
+              ></div>
+              <button
+                onclick="handleLogin()"
+                class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold"
+              >
+                Đăng nhập
+              </button>
+            </div>
+            <div class="mt-6 pt-6 border-t text-center">
+              <p class="text-sm text-gray-600">
+                Chưa có tài khoản?
+                <button
+                  onclick="showRegister()"
+                  class="text-medical-600 font-semibold"
+                >
+                  Đăng ký ngay
+                </button>
+              </p>
+              <div class="mt-4 grid grid-cols-2 gap-2">
+                <button
+                  onclick="quickLogin('0901111001')"
+                  class="text-xs py-2 bg-medical-50 text-medical-700 rounded-lg"
+                >
+                  👤 Bệnh nhân
+                </button>
+                <button
+                  onclick="quickLogin('0901111002')"
+                  class="text-xs py-2 bg-teal-50 text-teal-700 rounded-lg"
+                >
+                  💬 Tư vấn viên
+                </button>
+                <button
+                  onclick="quickLogin('0901111003')"
+                  class="text-xs py-2 bg-emerald-50 text-emerald-700 rounded-lg"
+                >
+                  👨‍⚕️ Bác sĩ
+                </button>
+                <button
+                  onclick="quickLogin('0901111000')"
+                  class="text-xs py-2 bg-purple-50 text-purple-700 rounded-lg"
+                >
+                  ⚙️ Admin
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="registerView" class="hidden">
+            <div class="flex items-center gap-2 mb-4">
+              <button onclick="showLogin()" class="text-gray-500">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <h2 class="text-2xl font-bold">Đăng ký</h2>
+            </div>
+            <div class="space-y-4">
+              <input
+                id="regName"
+                type="text"
+                placeholder="Họ và tên *"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl"
+              />
+              <input
+                id="regPhone"
+                type="tel"
+                placeholder="Số điện thoại *"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl"
+              />
+              <input
+                id="regEmail"
+                type="email"
+                placeholder="Email"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl"
+              />
+              <input
+                id="regPass"
+                type="password"
+                placeholder="Mật khẩu * (≥8 ký tự, chữ hoa & số)"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl"
+              />
+              <div
+                id="regError"
+                class="hidden bg-red-50 text-red-600 p-3 rounded-xl text-sm"
+              ></div>
+              <button
+                onclick="handleRegister()"
+                class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold"
+              >
+                Đăng ký
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="hidden min-h-screen flex flex-col md:flex-row">
+      <aside
+        class="w-64 bg-white shadow-xl flex-col fixed h-full z-20 hidden md:flex"
+      >
+        <div class="p-6 border-b flex items-center gap-3">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-medical-600 to-teal-600 rounded-xl flex items-center justify-center text-white"
+          >
+            <i class="fas fa-heartbeat"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-sm">MediCare Home</h1>
+            <p id="sidebarRole" class="text-xs text-gray-500">Vai trò</p>
+          </div>
+        </div>
+        <nav id="sidebarMenu" class="flex-1 p-4 space-y-1"></nav>
+        <div class="p-4 border-t">
+          <div class="flex items-center gap-3 mb-3 p-2 bg-gray-50 rounded-xl">
+            <div
+              id="userAvatar"
+              class="w-10 h-10 rounded-full bg-medical-100 text-medical-700 flex items-center justify-center font-bold"
+            >
+              U
+            </div>
+            <div>
+              <p id="userName" class="font-semibold text-sm">User</p>
+              <p id="userPhone" class="text-xs text-gray-500">090...</p>
+            </div>
+          </div>
+          <button
+            onclick="logout()"
+            class="w-full py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl"
+          >
+            <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+          </button>
+        </div>
+      </aside>
+      <main class="flex-1 md:ml-64 flex flex-col min-h-screen pb-20 md:pb-0">
+        <header
+          class="hidden md:flex bg-white shadow-sm px-6 py-4 items-center justify-between"
+        >
+          <div>
+            <h2 id="pageTitle" class="text-xl font-bold">Dashboard</h2>
+            <p id="pageSubtitle" class="text-sm text-gray-500">Tổng quan</p>
+          </div>
+        </header>
+        <div
+          id="contentArea"
+          class="flex-1 p-4 md:p-6 overflow-y-auto fade-in"
+        ></div>
+      </main>
+      <nav
+        id="bottomNav"
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center py-2 z-30"
+      ></nav>
+    </div>
+
+    <!-- MODAL -->
+    <div
+      id="modal"
+      class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+        id="modalContent"
+      ></div>
+    </div>
+    <!-- TOAST -->
+    <div
+      id="toast"
+      class="hidden fixed top-6 right-6 z-[100] bg-white shadow-2xl rounded-xl p-4 flex items-center gap-3 border-l-4 max-w-sm transition-all duration-300 transform translate-x-full"
+    >
+      <i id="toastIcon" class="fas fa-check-circle text-xl text-emerald-500"></i
+      ><span id="toastMsg" class="text-sm font-medium">Thông báo</span>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script>
+      let currentUser = null;
+      const roleNames = {
+        Admin: "Quản trị viên",
+        BacSi: "Bác sĩ",
+        TuVanVien: "Tư vấn viên",
+        BenhNhan: "Bệnh nhân",
+      };
+      const menus = {
+        BenhNhan: [
+          { key: "dashboard", icon: "home", label: "Tổng quan" },
+          { key: "yeuCau", icon: "comments", label: "Yêu cầu tư vấn" },
+          { key: "datLich", icon: "calendar-plus", label: "Đặt lịch" },
+          { key: "lichKham", icon: "calendar-check", label: "Lịch khám" },
+          { key: "benhAn", icon: "file-medical", label: "Bệnh án" },
+          { key: "hoaDon", icon: "file-invoice-dollar", label: "Hóa đơn" },
+          { key: "profile", icon: "user-circle", label: "Hồ sơ" },
+        ],
+        TuVanVien: [
+          { key: "dashboard", icon: "home", label: "Tổng quan" },
+          { key: "dieuPhoi", icon: "tasks", label: "Điều phối" },
+          { key: "profile", icon: "user-circle", label: "Hồ sơ" },
+        ],
+        BacSi: [
+          { key: "dashboard", icon: "home", label: "Tổng quan" },
+          { key: "lichCho", icon: "clock", label: "Lịch chờ xác nhận" },
+          {
+            key: "lichKhamBS",
+            icon: "calendar-alt",
+            label: "Lịch khám của tôi",
+          },
+          { key: "benhAnBS", icon: "file-medical", label: "Bệnh án" },
+          { key: "hoaDonBS", icon: "file-invoice", label: "Hóa đơn" },
+          { key: "profile", icon: "user-circle", label: "Hồ sơ" },
+        ],
+        Admin: [
+          { key: "dashboard", icon: "home", label: "Tổng quan" },
+          { key: "quanLyTK", icon: "users", label: "Quản lý TK" },
+          { key: "nhatKy", icon: "history", label: "Nhật ký" },
+          { key: "thongKe", icon: "chart-bar", label: "Thống kê" },
+          { key: "profile", icon: "user-circle", label: "Hồ sơ" },
+        ],
+      };
+      const bottomNavItems = {
+        BenhNhan: [
+          { key: "dashboard", icon: "home", label: "Trang chủ" },
+          { key: "datLich", icon: "calendar-plus", label: "Đặt lịch" },
+          { key: "profile", icon: "user", label: "Hồ sơ" },
+        ],
+        TuVanVien: [
+          { key: "dashboard", icon: "home", label: "Trang chủ" },
+          { key: "dieuPhoi", icon: "tasks", label: "Điều phối" },
+          { key: "profile", icon: "user", label: "Hồ sơ" },
+        ],
+        BacSi: [
+          { key: "dashboard", icon: "home", label: "Trang chủ" },
+          { key: "lichCho", icon: "calendar-check", label: "Lịch" },
+          { key: "profile", icon: "user", label: "Hồ sơ" },
+        ],
+        Admin: [
+          { key: "dashboard", icon: "home", label: "Trang chủ" },
+          { key: "quanLyTK", icon: "users", label: "QL TK" },
+          { key: "profile", icon: "user", label: "Hồ sơ" },
+        ],
+      };
+
+      // AUTH
+      function showRegister() {
+        document.getElementById("loginView").classList.add("hidden");
+        document.getElementById("registerView").classList.remove("hidden");
+        clearErrors();
+      }
+      function showLogin() {
+        document.getElementById("registerView").classList.add("hidden");
+        document.getElementById("loginView").classList.remove("hidden");
+        clearErrors();
+      }
+      function clearErrors() {
+        document
+          .querySelectorAll(".input-error")
+          .forEach((el) => el.classList.remove("input-error"));
+        document.getElementById("loginError")?.classList.add("hidden");
+        document.getElementById("regError")?.classList.add("hidden");
+      }
+      function validateField(inputId, label) {
+        const input = document.getElementById(inputId);
+        if (!input.value.trim()) {
+          input.classList.add("input-error");
+          showToast(`Vui lòng nhập ${label}`, "error");
+          input.focus();
+          return false;
+        }
+        input.classList.remove("input-error");
+        return true;
+      }
+      function quickLogin(sdt) {
+        document.getElementById("loginPhone").value = sdt;
+        document.getElementById("loginPass").value = "123456";
+        handleLogin();
+      }
+
+      async function handleLogin() {
+        clearErrors();
+        if (!validateField("loginPhone", "Số điện thoại")) return;
+        if (!validateField("loginPass", "Mật khẩu")) return;
+        try {
+          const data = await api.login(
+            document.getElementById("loginPhone").value,
+            document.getElementById("loginPass").value,
+          );
+          api.setAuth(data.token, data.user);
+          currentUser = data.user;
+          enterApp();
+        } catch (err) {
+          document.getElementById("loginError").textContent = err.message;
+          document.getElementById("loginError").classList.remove("hidden");
+        }
+      }
+
+      async function handleRegister() {
+        clearErrors();
+        if (!validateField("regName", "Họ và tên")) return;
+        if (!validateField("regPhone", "Số điện thoại")) return;
+        const pass = document.getElementById("regPass").value;
+        if (!pass) {
+          showToast("Vui lòng nhập mật khẩu", "error");
+          document.getElementById("regPass").classList.add("input-error");
+          return;
+        }
+        if (pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass)) {
+          showToast("Mật khẩu ≥8 ký tự, có chữ hoa và số", "error");
+          document.getElementById("regPass").classList.add("input-error");
+          return;
+        }
+        try {
+          await api.register({
+            hoTen: document.getElementById("regName").value.trim(),
+            soDienThoai: document.getElementById("regPhone").value.trim(),
+            email: document.getElementById("regEmail").value.trim(),
+            matKhau: pass,
+          });
+          showToast("Đăng ký thành công!", "success");
+          showLogin();
+          document.getElementById("loginPhone").value =
+            document.getElementById("regPhone").value;
+        } catch (err) {
+          document.getElementById("regError").textContent = err.message;
+          document.getElementById("regError").classList.remove("hidden");
+        }
+      }
+
+      function logout() {
+        api.clearAuth();
+        location.reload();
+      }
+
+      function enterApp() {
+        document.getElementById("authScreen").classList.add("hidden");
+        document.getElementById("mainApp").classList.remove("hidden");
+        document.getElementById("userName").textContent = currentUser.hoTen;
+        document.getElementById("userPhone").textContent =
+          currentUser.soDienThoai;
+        document.getElementById("userAvatar").textContent =
+          currentUser.hoTen.charAt(0);
+        document.getElementById("sidebarRole").textContent =
+          roleNames[currentUser.vaiTro];
+        buildSidebar();
+        buildBottomNav();
+        navigate("dashboard");
+      }
+
+      function buildSidebar() {
+        document.getElementById("sidebarMenu").innerHTML = menus[
+          currentUser.vaiTro
+        ]
+          .map(
+            (m) =>
+              `<button onclick="navigate('${m.key}')" data-nav="${m.key}" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-medical-50 font-medium text-sm"><i class="fas fa-${m.icon} w-5 text-center"></i><span>${m.label}</span></button>`,
+          )
+          .join("");
+      }
+      function buildBottomNav() {
+        const items = bottomNavItems[currentUser.vaiTro] || [];
+        document.getElementById("bottomNav").innerHTML = items
+          .map(
+            (m) =>
+              `<button onclick="navigate('${m.key}')" data-bnav="${m.key}" class="flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-medical-600 flex-1"><i class="fas fa-${m.icon} text-xl"></i><span class="text-[10px] font-medium">${m.label}</span></button>`,
+          )
+          .join("");
+      }
+
+      async function navigate(page) {
+        document
+          .querySelectorAll(".sidebar-link, [data-bnav]")
+          .forEach((el) => el.classList.remove("active", "text-medical-600"));
+        document
+          .querySelectorAll(`[data-nav="${page}"], [data-bnav="${page}"]`)
+          .forEach((el) => {
+            el.classList.add("active");
+            if (el.hasAttribute("data-bnav"))
+              el.classList.add("text-medical-600");
+          });
+        const content = document.getElementById("contentArea");
+        content.classList.remove("fade-in");
+        void content.offsetWidth;
+        content.classList.add("fade-in");
+        window.scrollTo(0, 0);
+        try {
+          switch (page) {
+            case "dashboard":
+              await renderDashboard();
+              break;
+            case "yeuCau":
+              await renderYeuCau();
+              break;
+            case "datLich":
+              await renderDatLich();
+              break;
+            case "lichKham":
+              await renderLichKham();
+              break;
+            case "benhAn":
+              await renderBenhAn();
+              break;
+            case "hoaDon":
+              await renderHoaDon();
+              break;
+            case "dieuPhoi":
+              await renderDieuPhoi();
+              break;
+            case "lichCho":
+              await renderLichCho();
+              break;
+            case "lichKhamBS":
+              await renderLichKhamBS();
+              break;
+            case "benhAnBS":
+              await renderBenhAnBS();
+              break;
+            case "hoaDonBS":
+              await renderHoaDonBS();
+              break;
+            case "quanLyTK":
+              await renderQuanLyTK();
+              break;
+            case "nhatKy":
+              await renderNhatKy();
+              break;
+            case "thongKe":
+              await renderThongKe();
+              break;
+            case "profile":
+              await renderProfile();
+              break;
+          }
+        } catch (err) {
+          content.innerHTML = `<div class="bg-red-50 text-red-600 p-4 rounded-xl">❌ Lỗi: ${err.message}</div>`;
+        }
+      }
+
+      // DASHBOARD
+      async function renderDashboard() {
+        document.getElementById("pageTitle").textContent = "Tổng quan";
+        document.getElementById("pageSubtitle").textContent =
+          `Xin chào, ${currentUser.hoTen}!`;
+        if (currentUser.vaiTro === "BenhNhan") {
+          const [lich, hd] = await Promise.all([
+            api.getMyAppointments(),
+            api.getMyInvoices(),
+          ]);
+          const choTT = hd.filter((h) => h.trangThai === "ChoThanhToan").length;
+          document.getElementById("contentArea").innerHTML =
+            `<div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6"><div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-medical-500"><p class="text-xs text-gray-500">Lịch khám</p><p class="text-2xl font-bold mt-1">${lich.length}</p></div><div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-amber-500"><p class="text-xs text-gray-500">Chờ TT</p><p class="text-2xl font-bold mt-1">${choTT}</p></div><div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-emerald-500 col-span-2 md:col-span-1"><p class="text-xs text-gray-500">Tổng HĐ</p><p class="text-2xl font-bold mt-1">${hd.length}</p></div></div><div class="bg-white rounded-2xl p-5 shadow-sm"><h3 class="font-bold mb-4 text-sm">Thao tác nhanh</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-3"><button onclick="navigate('yeuCau')" class="p-4 bg-gradient-to-br from-medical-500 to-medical-600 text-white rounded-xl text-center"><i class="fas fa-comments text-2xl mb-2 block"></i><span class="text-xs">Tư vấn</span></button><button onclick="navigate('datLich')" class="p-4 bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-xl text-center"><i class="fas fa-calendar-plus text-2xl mb-2 block"></i><span class="text-xs">Đặt lịch</span></button><button onclick="navigate('benhAn')" class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl text-center"><i class="fas fa-file-medical text-2xl mb-2 block"></i><span class="text-xs">Bệnh án</span></button><button onclick="navigate('hoaDon')" class="p-4 bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-xl text-center"><i class="fas fa-qrcode text-2xl mb-2 block"></i><span class="text-xs">Thanh toán</span></button></div></div>`;
+        } else if (currentUser.vaiTro === "Admin") {
+          const stats = await api.getStatistics();
+          document.getElementById("contentArea").innerHTML =
+            `<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"><div class="bg-white p-4 rounded-2xl shadow-sm"><p class="text-xs text-gray-500">Bệnh nhân</p><p class="text-xl md:text-2xl font-bold mt-1">${stats.soBenhNhan || 0}</p></div><div class="bg-white p-4 rounded-2xl shadow-sm"><p class="text-xs text-gray-500">Bác sĩ</p><p class="text-xl md:text-2xl font-bold mt-1">${stats.soBacSi || 0}</p></div><div class="bg-white p-4 rounded-2xl shadow-sm"><p class="text-xs text-gray-500">Doanh thu</p><p class="text-sm md:text-lg font-bold mt-1 text-emerald-600">${(stats.tongDoanhThu || 0).toLocaleString("vi-VN")}₫</p></div><div class="bg-white p-4 rounded-2xl shadow-sm"><p class="text-xs text-gray-500">YC chờ</p><p class="text-xl md:text-2xl font-bold mt-1 text-amber-600">${stats.yeuCauChoXuLy || 0}</p></div></div>`;
+        } else if (currentUser.vaiTro === "BacSi") {
+          const lich = await api.getDoctorPendingAppointments();
+          document.getElementById("contentArea").innerHTML =
+            `<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"><div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-amber-500"><p class="text-sm text-gray-500">Lịch chờ xác nhận</p><p class="text-3xl font-bold mt-1 text-amber-600">${lich.length}</p></div></div><div class="bg-white rounded-2xl p-6 shadow-sm"><h3 class="font-bold mb-4">Lịch chờ xác nhận</h3>${lich.length === 0 ? '<p class="text-gray-500 text-center py-4">Không có</p>' : lich.map((l) => `<div class="p-4 border rounded-xl mb-3"><div class="flex justify-between mb-2"><div><p class="font-bold">${l.tenBenhNhan}</p><p class="text-sm text-gray-500">${l.sdtBenhNhan}</p></div><span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">Chờ XN</span></div><p class="text-sm"><i class="fas fa-clock text-medical-500 mr-2"></i>${l.thoiGian}</p><p class="text-sm"><i class="fas fa-map-marker-alt text-medical-500 mr-2"></i>${l.diaChi}</p><div class="flex gap-2 mt-3"><button onclick="xacNhanLich(${l.id})" class="flex-1 py-2 bg-emerald-500 text-white rounded-lg text-sm">Xác nhận</button><button onclick="tuChoiLich(${l.id})" class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm">Từ chối</button></div></div>`).join("")}</div>`;
+        } else {
+          document.getElementById("contentArea").innerHTML =
+            `<div class="bg-white rounded-2xl p-6 shadow-sm text-center text-gray-500">Chào mừng ${currentUser.hoTen}!</div>`;
+        }
+      }
+
+      // PROFILE
+      async function renderProfile() {
+        document.getElementById("pageTitle").textContent = "Hồ sơ cá nhân";
+        document.getElementById("contentArea").innerHTML =
+          `<div class="max-w-2xl mx-auto space-y-4"><div class="bg-white rounded-2xl p-6 shadow-sm text-center"><div class="w-20 h-20 bg-gradient-to-br from-medical-500 to-teal-500 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-3">${currentUser.hoTen.charAt(0)}</div><h3 class="text-xl font-bold">${currentUser.hoTen}</h3><p class="text-sm text-gray-500">${roleNames[currentUser.vaiTro]} • ${currentUser.soDienThoai}</p></div><div class="bg-white rounded-2xl p-6 shadow-sm"><h4 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-lock text-medical-600"></i> Đổi mật khẩu</h4><div class="space-y-3"><div><label class="text-xs font-medium text-gray-700 mb-1 block">Mật khẩu hiện tại *</label><input id="oldPass" type="password" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Mật khẩu mới * (≥8 ký tự, chữ hoa & số)</label><input id="newPass" type="password" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Xác nhận mật khẩu mới *</label><input id="confirmPass" type="password" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><button onclick="doChangePassword()" class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold">Cập nhật mật khẩu</button></div></div></div>`;
+      }
+
+      async function doChangePassword() {
+        const oldPass = document.getElementById("oldPass").value;
+        const newPass = document.getElementById("newPass").value;
+        const confirmPass = document.getElementById("confirmPass").value;
+        if (!oldPass) return showToast("Nhập mật khẩu hiện tại", "error");
+        if (!newPass) return showToast("Nhập mật khẩu mới", "error");
+        if (
+          newPass.length < 8 ||
+          !/[A-Z]/.test(newPass) ||
+          !/[0-9]/.test(newPass)
+        )
+          return showToast("MK mới ≥8 ký tự, có chữ hoa & số", "error");
+        if (newPass !== confirmPass)
+          return showToast("Mật khẩu xác nhận không khớp", "error");
+        try {
+          await api.changePassword(oldPass, newPass);
+          showToast("Đổi mật khẩu thành công!", "success");
+          document.getElementById("oldPass").value = "";
+          document.getElementById("newPass").value = "";
+          document.getElementById("confirmPass").value = "";
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      // PATIENT FEATURES
+      async function renderYeuCau() {
+        document.getElementById("pageTitle").textContent = "Yêu cầu tư vấn";
+        const yc = await api.getMyConsultations();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm mb-4"><h3 class="font-bold mb-4">Gửi yêu cầu tư vấn mới</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="text-xs font-medium text-gray-700 mb-1 block">Hình thức *</label><select id="ycHT" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"><option value="VideoCall">📹 Video Call</option><option value="Chat">💬 Chat</option></select></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Triệu chứng *</label><input id="ycTC" type="text" placeholder="Mô tả triệu chứng..." class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div></div><button onclick="guiYeuCau()" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold">Gửi yêu cầu</button></div><div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm"><h3 class="font-bold mb-4">Lịch sử (${yc.length})</h3>${yc.length === 0 ? '<p class="text-center text-gray-500 py-6">Chưa có yêu cầu</p>' : yc.map((y) => `<div class="p-4 border rounded-xl mb-3"><div class="flex justify-between mb-2"><div><p class="font-semibold text-sm">${y.hinhThuc}</p><p class="text-xs text-gray-500">${y.thoiGianTao || ""}</p></div><span class="px-2 py-1 bg-sky-100 text-sky-700 rounded-full text-xs">${y.trangThai}</span></div><p class="text-sm"><strong>TC:</strong> ${y.trieuChung}</p>${y.tenBacSi ? `<p class="text-sm text-medical-600 mt-2"><i class="fas fa-user-md mr-1"></i>BS: ${y.tenBacSi}</p>` : ""}</div>`).join("")}</div>`;
+      }
+
+      async function guiYeuCau() {
+        const tc = document.getElementById("ycTC").value.trim();
+        if (!tc) return showToast("Vui lòng nhập triệu chứng", "error");
+        try {
+          await api.createConsultation({
+            hinhThuc: document.getElementById("ycHT").value,
+            trieuChung: tc,
+          });
+          showToast("Đã gửi yêu cầu!", "success");
+          navigate("yeuCau");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function renderDatLich() {
+        document.getElementById("pageTitle").textContent = "Đặt lịch khám";
+        const doctors = await api.getDoctors();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="max-w-3xl mx-auto"><div class="bg-white rounded-2xl p-4 shadow-sm mb-4"><h3 class="font-bold text-sm mb-3 flex items-center gap-2"><span class="w-6 h-6 bg-medical-600 text-white rounded-full flex items-center justify-center text-xs">1</span>Chọn bác sĩ</h3>${doctors.length === 0 ? '<p class="text-center text-gray-500 py-4">Chưa có bác sĩ</p>' : `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${doctors.map((d) => `<div class="doctor-card border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-medical-400 transition" data-id="${d.id}" onclick="selectDoctor(this)"><div class="flex items-start gap-3"><div class="w-12 h-12 bg-gradient-to-br from-medical-500 to-teal-500 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">${d.hoTen.replace("BS. ", "").charAt(0)}</div><div class="flex-1"><p class="font-semibold text-sm">${d.hoTen}</p><p class="text-xs text-gray-600"><i class="fas fa-stethoscope text-medical-500 mr-1"></i>${d.chuyenKhoa || "Chung"}</p><div class="flex items-center justify-between text-xs mt-1"><span><i class="fas fa-briefcase mr-1"></i>${d.kinhNghiem || 0} năm</span><span class="font-bold text-medical-700">${(d.phiTuVan || 300000).toLocaleString("vi-VN")}₫</span></div></div></div></div>`).join("")}</div>`}</div><div class="bg-white rounded-2xl p-4 shadow-sm"><h3 class="font-bold text-sm mb-3 flex items-center gap-2"><span class="w-6 h-6 bg-medical-600 text-white rounded-full flex items-center justify-center text-xs">2</span>Thông tin lịch khám</h3><div class="space-y-3"><div><label class="text-xs font-medium text-gray-700 mb-1 block">Ngày giờ *</label><input id="dlTG" type="datetime-local" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Địa chỉ *</label><input id="dlDC" type="text" value="${currentUser.diaChi || ""}" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Ghi chú</label><textarea id="dlGC" rows="2" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></textarea></div><button onclick="datLich()" class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold">Xác nhận đặt lịch</button></div></div></div>`;
+      }
+
+      let selectedDoctorId = null;
+      function selectDoctor(el) {
+        document
+          .querySelectorAll(".doctor-card")
+          .forEach((c) =>
+            c.classList.remove("border-medical-600", "bg-medical-50"),
+          );
+        el.classList.add("border-medical-600", "bg-medical-50");
+        selectedDoctorId = parseInt(el.dataset.id);
+      }
+
+      async function datLich() {
+        if (!selectedDoctorId)
+          return showToast("Vui lòng chọn bác sĩ", "error");
+        if (!validateField("dlTG", "Ngày giờ")) return;
+        if (!validateField("dlDC", "Địa chỉ")) return;
+        try {
+          await api.createAppointment({
+            idBacSi: selectedDoctorId,
+            thoiGian: document.getElementById("dlTG").value,
+            diaChi: document.getElementById("dlDC").value.trim(),
+            ghiChu: document.getElementById("dlGC").value.trim(),
+          });
+          showToast("Đặt lịch thành công!", "success");
+          navigate("lichKham");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function renderLichKham() {
+        document.getElementById("pageTitle").textContent = "Lịch khám của tôi";
+        document.getElementById("pageSubtitle").textContent =
+          "Xem, sửa hoặc hủy lịch khám";
+
+        const lich = await api.getMyAppointments();
+
+        const cards = lich
+          .map((l) => {
+            const conSuaDuoc = ["ChoXacNhan", "DaXacNhan"].includes(
+              l.trangThai,
+            );
+            return `
+      <div class="p-4 border border-gray-100 rounded-xl mb-3 hover:shadow-md transition">
+        <div class="flex justify-between items-start mb-3 gap-2">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-11 h-11 bg-gradient-to-br from-medical-500 to-teal-500 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
+              ${(l.tenBacSi || "B").replace("BS. ", "").charAt(0)}
+            </div>
+            <div class="min-w-0">
+              <p class="font-bold text-sm truncate">${l.tenBacSi || "Bác sĩ"}</p>
+              <p class="text-xs text-gray-500 truncate">${l.chuyenKhoa || ""}</p>
+            </div>
+          </div>
+          ${badgeLich(l.trangThai)}
+        </div>
+        <div class="space-y-1 text-sm text-gray-700 mb-3">
+          <p><i class="fas fa-clock text-medical-500 mr-2 w-4"></i>${fmtDT(l.thoiGian)}</p>
+          <p><i class="fas fa-map-marker-alt text-medical-500 mr-2 w-4"></i>${l.diaChi || "—"}</p>
+          ${l.ghiChu ? `<p><i class="fas fa-sticky-note text-amber-500 mr-2 w-4"></i>${l.ghiChu}</p>` : ""}
+        </div>
+        ${
+          conSuaDuoc
+            ? `
+          <div class="flex gap-2">
+            <button onclick="moSuaLich(${l.id})" class="flex-1 py-2 bg-medical-50 text-medical-700 rounded-lg text-sm font-medium hover:bg-medical-100">
+              <i class="fas fa-edit mr-1"></i>Sửa lịch
+            </button>
+            <button onclick="doiTrangThaiLich(${l.id},'DaHuy','lichKham')" class="flex-1 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100">
+              <i class="fas fa-times mr-1"></i>Hủy lịch
+            </button>
+          </div>`
+            : '<p class="text-xs text-gray-400 italic">Lịch đã kết thúc</p>'
+        }
+      </div>`;
+          })
+          .join("");
+
+        document.getElementById("contentArea").innerHTML = `
+    <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm">
+      ${
+        lich.length === 0
+          ? '<p class="text-center text-gray-500 py-10"><i class="fas fa-calendar-times text-3xl mb-2 block"></i>Chưa có lịch khám nào</p>'
+          : cards
+      }
+    </div>`;
+      }
+      async function huyLich(id) {
+        if (!confirm("Hủy lịch?")) return;
+        try {
+          await api.cancelAppointment(id);
+          showToast("Đã hủy", "success");
+          navigate("lichKham");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function renderBenhAn() {
+        document.getElementById("pageTitle").textContent = "Bệnh án";
+        const ba = await api.getMyMedicalRecords();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm">${ba.length === 0 ? '<p class="text-center text-gray-500 py-8">Chưa có bệnh án</p>' : ba.map((b) => `<div class="p-4 border rounded-xl mb-3"><div class="flex justify-between mb-2"><div><p class="font-bold text-sm">#${b.id}</p><p class="text-xs text-gray-500">${fmtD(b.ngayTao)}</p></div><p class="text-sm text-medical-600">${b.tenBacSi || ""}</p></div><div class="p-3 bg-sky-50 rounded-lg mb-2"><p class="text-xs text-sky-700 font-semibold">CHẨN ĐOÁN</p><p class="text-sm">${b.chanDoan || ""}</p></div>${b.huongDieuTri ? `<div class="p-3 bg-teal-50 rounded-lg"><p class="text-xs text-teal-700 font-semibold">ĐIỀU TRỊ</p><p class="text-sm">${b.huongDieuTri}</p></div>` : ""}</div>`).join("")}</div>`;
+      }
+
+      async function renderHoaDon() {
+        document.getElementById("pageTitle").textContent = "Hóa đơn";
+        const hd = await api.getMyInvoices();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm max-w-2xl">${hd.length === 0 ? '<p class="text-center text-gray-500 py-8">Chưa có hóa đơn</p>' : hd.map((h) => `<div class="border rounded-xl p-5 mb-3"><div class="flex justify-between items-start mb-4"><div><p class="font-bold text-lg">#${h.maHoaDon || h.id}</p><p class="text-sm text-gray-500">${fmtD(h.ngayTao)}</p></div><span class="px-3 py-1 ${h.trangThai === "ChoThanhToan" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"} rounded-full text-sm">${h.trangThai}</span></div><div class="space-y-2 text-sm mb-4"><div class="flex justify-between"><span>Phí tư vấn</span><span>${(h.phiTuVan || 0).toLocaleString("vi-VN")}₫</span></div><div class="flex justify-between"><span>Phí khám</span><span>${(h.phiKham || 0).toLocaleString("vi-VN")}₫</span></div><div class="border-t my-2"></div><div class="flex justify-between text-lg font-bold text-medical-700"><span>Tổng</span><span>${(h.tongTien || 0).toLocaleString("vi-VN")}₫</span></div></div>${h.trangThai === "ChoThanhToan" ? `<button onclick="moQR(${h.id})" class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold"><i class="fas fa-qrcode mr-2"></i>Thanh toán VietQR</button>` : ""}</div>`).join("")}</div>`;
+      }
+
+      function moQR(id) {
+        api
+          .generateQR(id)
+          .then((data) => {
+            document.getElementById("modalContent").innerHTML =
+              `<div class="text-center"><h3 class="text-xl font-bold mb-4">Thanh toán VietQR</h3><div class="bg-gradient-to-br from-medical-600 to-teal-600 rounded-2xl p-4 mb-4 text-white"><p class="text-white/80 text-sm">Tổng tiền</p><p class="text-3xl font-bold">${(data.tongTien || 0).toLocaleString("vi-VN")}₫</p></div><div class="border-2 border-dashed border-medical-300 rounded-2xl p-4 mb-4"><img src="${data.qrCodeUrl}" class="mx-auto mb-2 max-w-[200px]"><p class="text-xs text-gray-500">Quét mã bằng app ngân hàng</p></div><button onclick="xacNhanTT(${id})" class="w-full py-3 bg-emerald-500 text-white rounded-xl font-semibold"><i class="fas fa-check mr-2"></i>Tôi đã chuyển khoản</button><button onclick="closeModal()" class="w-full py-3 mt-2 bg-gray-100 text-gray-700 rounded-xl">Hủy</button></div>`;
+            document.getElementById("modal").classList.remove("hidden");
+          })
+          .catch((err) => showToast(err.message, "error"));
+      }
+      async function xacNhanTT(id) {
+        try {
+          await api.confirmPayment(id);
+          closeModal();
+          showToast("Thanh toán thành công!", "success");
+          navigate("hoaDon");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      // CONSULTANT
+      async function renderDieuPhoi() {
+        document.getElementById("pageTitle").textContent = "Điều phối";
+        const yc = await api.getPendingConsultations();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm">${yc.length === 0 ? '<p class="text-center text-gray-500 py-6">Không có yêu cầu</p>' : yc.map((y) => `<div class="p-4 border rounded-xl mb-3"><div class="flex justify-between mb-2"><div><p class="font-bold text-sm">${y.tenBenhNhan || "BN"}</p><p class="text-xs text-gray-500">${y.sdtBenhNhan || ""}</p></div><span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">Chờ xử lý</span></div><p class="text-sm mb-3"><strong>TC:</strong> ${y.trieuChung || ""}</p><button onclick="moDieuPhoi(${y.id})" class="w-full py-2 bg-medical-600 text-white rounded-lg text-sm font-medium">Điều phối BS</button></div>`).join("")}</div>`;
+      }
+      async function moDieuPhoi(idYC) {
+        const accounts = await api.getAccounts();
+        const bsList = accounts.filter(
+          (a) => a.vaiTro === "BacSi" && a.trangThai === "HoatDong",
+        );
+        document.getElementById("modalContent").innerHTML =
+          `<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Chọn bác sĩ</h3><button onclick="closeModal()" class="text-gray-400"><i class="fas fa-times"></i></button></div><div class="space-y-2 max-h-80 overflow-y-auto">${bsList.map((b) => `<button onclick="dieuphi(${idYC},${b.id})" class="w-full p-3 border rounded-xl hover:border-medical-500 text-left flex items-center gap-3"><div class="w-10 h-10 bg-medical-100 rounded-full flex items-center justify-center text-medical-700 font-bold">${b.hoTen.charAt(0)}</div><div class="flex-1"><p class="font-semibold text-sm">${b.hoTen}</p><p class="text-xs text-gray-500">${b.chuyenKhoa || ""}</p></div></button>`).join("")}</div>`;
+        document.getElementById("modal").classList.remove("hidden");
+      }
+      async function dieuphi(idYC, idBS) {
+        try {
+          await api.assignDoctor({
+            idYeuCau: idYC,
+            idBacSi: idBS,
+            ghiChuSanLoc: "",
+          });
+          closeModal();
+          showToast("Đã điều phối!", "success");
+          navigate("dieuPhoi");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      // DOCTOR
+      async function renderLichCho() {
+        document.getElementById("pageTitle").textContent = "Lịch chờ xác nhận";
+        const lich = await api.getDoctorPendingAppointments();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm">${lich.length === 0 ? '<p class="text-center text-gray-500 py-8">Không có lịch chờ</p>' : lich.map((l) => `<div class="p-4 border rounded-xl mb-3"><div class="flex justify-between mb-2"><div><p class="font-bold">${l.tenBenhNhan || "BN"}</p><p class="text-sm text-gray-500">${l.sdtBenhNhan || ""}</p></div><span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">Chờ XN</span></div><p class="text-sm"><i class="fas fa-clock text-medical-500 mr-2"></i>${l.thoiGian}</p><p class="text-sm"><i class="fas fa-map-marker-alt text-medical-500 mr-2"></i>${l.diaChi}</p><div class="flex gap-2 mt-3"><button onclick="xacNhanLich(${l.id})" class="flex-1 py-2 bg-emerald-500 text-white rounded-lg text-sm">Xác nhận</button><button onclick="tuChoiLich(${l.id})" class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm">Từ chối</button></div></div>`).join("")}</div>`;
+      }
+      async function xacNhanLich(id) {
+        try {
+          await api.updateAppointmentStatus(id, "DaXacNhan");
+          showToast("Đã xác nhận", "success");
+          navigate("lichCho");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+      async function tuChoiLich(id) {
+        if (!confirm("Từ chối?")) return;
+        try {
+          await api.updateAppointmentStatus(id, "BSTuChoi");
+          showToast("Đã từ chối", "info");
+          navigate("lichCho");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function renderBenhAnBS() {
+        document.getElementById("pageTitle").textContent = "Tạo bệnh án";
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm max-w-2xl"><div class="space-y-4"><div><label class="text-xs font-medium text-gray-700 mb-1 block">SĐT bệnh nhân *</label><input id="baSdt" type="text" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Triệu chứng *</label><textarea id="baTC" rows="2" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></textarea></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Chẩn đoán *</label><textarea id="baCD" rows="2" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></textarea></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Hướng điều trị</label><textarea id="baHD" rows="2" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></textarea></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Đơn thuốc</label><textarea id="baDT" rows="2" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></textarea></div><button onclick="taoBA()" class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold">Tạo bệnh án</button></div></div>`;
+      }
+      async function taoBA() {
+        if (!validateField("baSdt", "SĐT bệnh nhân")) return;
+        if (!validateField("baTC", "Triệu chứng")) return;
+        if (!validateField("baCD", "Chẩn đoán")) return;
+        try {
+          await api.createMedicalRecord({
+            soDienThoaiBenhNhan: document.getElementById("baSdt").value.trim(),
+            trieuChung: document.getElementById("baTC").value,
+            chanDoan: document.getElementById("baCD").value,
+            huongDieuTri: document.getElementById("baHD").value,
+            donThuoc: document.getElementById("baDT").value,
+          });
+          showToast("Đã tạo bệnh án!", "success");
+          navigate("benhAnBS");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function renderHoaDonBS() {
+        document.getElementById("pageTitle").textContent = "Tạo hóa đơn";
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm max-w-2xl"><div class="space-y-4"><div><label class="text-xs font-medium text-gray-700 mb-1 block">SĐT bệnh nhân *</label><input id="hdSdt" type="text" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div class="grid grid-cols-3 gap-3"><div><label class="text-xs font-medium text-gray-700 mb-1 block">Phí TV</label><input id="hdTV" type="number" value="200000" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Phí khám</label><input id="hdK" type="number" value="300000" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div><div><label class="text-xs font-medium text-gray-700 mb-1 block">Phí thuốc</label><input id="hdT" type="number" value="0" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl"></div></div><button onclick="taoHD()" class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold">Tạo hóa đơn</button></div></div>`;
+      }
+      async function taoHD() {
+        if (!validateField("hdSdt", "SĐT bệnh nhân")) return;
+        try {
+          const accounts = await api.getAccounts();
+          const bn = accounts.find(
+            (a) =>
+              a.soDienThoai === document.getElementById("hdSdt").value.trim(),
+          );
+          if (!bn) return showToast("Không tìm thấy BN", "error");
+          await api.createInvoice({
+            idBenhNhan: bn.id,
+            phiTuVan: parseInt(document.getElementById("hdTV").value) || 0,
+            phiKhamTaiNha: parseInt(document.getElementById("hdK").value) || 0,
+            phiThuoc: parseInt(document.getElementById("hdT").value) || 0,
+          });
+          showToast("Đã tạo hóa đơn!", "success");
+          navigate("hoaDonBS");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      // ADMIN
+      // ============ ADMIN: QUẢN LÝ TÀI KHOẢN ============
+      async function renderQuanLyTK() {
+        document.getElementById("pageTitle").textContent = "Quản lý tài khoản";
+        document.getElementById("pageSubtitle").textContent =
+          "Quản lý người dùng hệ thống";
+
+        const accounts = await api.getAccounts();
+
+        // Tạo từng dòng trong bảng
+        const rows = accounts
+          .map((a) => {
+            const laChinhMinh = a.id === currentUser.id;
+            const tenAnToan = a.hoTen.replace(/'/g, "\\'");
+
+            // Cột thao tác: nếu là chính mình thì KHÔNG hiện nút xóa
+            let thaoTac;
+            if (laChinhMinh) {
+              thaoTac =
+                '<span class="text-xs text-gray-400 italic">Tài khoản của bạn</span>';
+            } else {
+              const nutTrangThai =
+                a.trangThai === "HoatDong"
+                  ? `<button onclick="dinhChi(${a.id})" class="text-amber-600 hover:text-amber-800 mr-2" title="Đình chỉ"><i class="fas fa-ban"></i></button>`
+                  : `<button onclick="kichHoat(${a.id})" class="text-emerald-600 hover:text-emerald-800 mr-2" title="Kích hoạt"><i class="fas fa-check"></i></button>`;
+              thaoTac =
+                nutTrangThai +
+                `<button onclick="xoaTK(${a.id}, '${tenAnToan}')" class="text-red-600 hover:text-red-800" title="Xóa"><i class="fas fa-trash"></i></button>`;
+            }
+
+            const mauTrangThai =
+              a.trangThai === "HoatDong"
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-red-100 text-red-700";
+
+            return `
+      <tr class="border-b hover:bg-gray-50" data-search="${a.hoTen.toLowerCase()} ${a.soDienThoai}">
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-medical-100 text-medical-700 flex items-center justify-center font-bold text-xs">
+              ${a.hoTen.charAt(0)}
+            </div>
+            <span class="font-medium">${a.hoTen}</span>
+            ${laChinhMinh ? '<span class="text-xs text-medical-600">(bạn)</span>' : ""}
+          </div>
+        </td>
+        <td class="px-4 py-3 text-gray-600">${a.soDienThoai}</td>
+        <td class="px-4 py-3">
+          <span class="px-2 py-1 bg-medical-100 text-medical-700 rounded text-xs font-medium">${a.vaiTro}</span>
+        </td>
+        <td class="px-4 py-3">
+          <span class="px-2 py-1 ${mauTrangThai} rounded-full text-xs font-medium">${a.trangThai}</span>
+        </td>
+        <td class="px-4 py-3 text-right whitespace-nowrap">${thaoTac}</td>
+      </tr>`;
+          })
+          .join("");
+
+        document.getElementById("contentArea").innerHTML = `
+    <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+        <input id="tkSearch" type="text" placeholder="Tìm theo tên, SĐT..."
+               class="w-full md:w-64 px-4 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-medical-500"
+               oninput="filterAcc()">
+        <button onclick="moThemTK()" class="w-full md:w-auto px-4 py-2 bg-medical-600 text-white rounded-xl text-sm font-medium hover:bg-medical-700">
+          <i class="fas fa-plus mr-2"></i>Thêm nhân viên
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs text-gray-500 uppercase">Họ tên</th>
+              <th class="px-4 py-3 text-left text-xs text-gray-500 uppercase">SĐT</th>
+              <th class="px-4 py-3 text-left text-xs text-gray-500 uppercase">Vai trò</th>
+              <th class="px-4 py-3 text-left text-xs text-gray-500 uppercase">Trạng thái</th>
+              <th class="px-4 py-3 text-right text-xs text-gray-500 uppercase">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="accTable">${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+      }
+      function filterAcc() {
+        const q = document.getElementById("tkSearch").value.toLowerCase();
+        document.querySelectorAll("#accTable tr").forEach((tr) => {
+          tr.style.display = tr.dataset.search.includes(q) ? "" : "none";
+        });
+      }
+      async function dinhChi(id) {
+        if (!confirm("Đình chỉ?")) return;
+        try {
+          await api.suspendAccount(id);
+          showToast("Đã đình chỉ", "success");
+          navigate("quanLyTK");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+      async function kichHoat(id) {
+        try {
+          await api.activateAccount(id);
+          showToast("Đã kích hoạt", "success");
+          navigate("quanLyTK");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+      async function xoaTK(id, ten) {
+        if (id === currentUser.id) {
+          return showToast(
+            "Không thể xóa tài khoản của chính bạn đang đăng nhập!",
+            "error",
+          );
+        }
+        if (
+          !confirm(
+            `⚠️ XÓA VĨNH VIỄN\n\nTài khoản: ${ten || id}\n\nBệnh án & hóa đơn lịch sử được giữ lại (ẩn danh).\nNhật ký hệ thống không bị xóa.\n\nBạn chắc chắn?`,
+          )
+        )
+          return;
+
+        try {
+          const r = await api.deleteAccount(id);
+          showToast(r.message || "Đã xóa tài khoản", "success");
+          navigate("quanLyTK");
+        } catch (err) {
+          // Bị chặn → mở bảng liệt kê ràng buộc để Admin biết phải xử lý gì
+          try {
+            const dep = await api.getAccountDependencies(id);
+            const coLich = dep.lich && dep.lich.length > 0;
+            const coHD = dep.hoaDon && dep.hoaDon.length > 0;
+
+            if (!coLich && !coHD) return showToast(err.message, "error");
+
+            document.getElementById("modalContent").innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-bold text-red-600"><i class="fas fa-lock mr-2"></i>Không thể xóa tài khoản</h3>
+          <button onclick="closeModal()" class="text-gray-400"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <p class="text-sm text-gray-600 mb-4">
+          Tài khoản <strong>${ten || id}</strong> còn giao dịch đang diễn ra.
+          Theo đặc tả Use case <em>Xóa tài khoản</em> (mục 3.2.2s), phải xử lý xong trước khi xóa.
+        </p>
+
+        ${
+          coLich
+            ? `
+          <p class="font-semibold text-sm mb-2">📅 Lịch khám chưa hoàn tất (${dep.lich.length})</p>
+          <div class="space-y-2 mb-4 max-h-48 overflow-y-auto">
+            ${dep.lich
+              .map(
+                (l) => `
+              <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs">
+                <div class="flex justify-between items-center mb-1">
+                  <strong>Lịch #${l.id}</strong>${badgeLich(l.trangThai)}
+                </div>
+                <p>🕐 ${fmtDT(l.thoiGian)}</p>
+                <p>👤 BN: ${l.tenBenhNhan} — 🩺 BS: ${l.tenBacSi}</p>
+                <p>📍 ${l.diaChi || "—"}</p>
+              </div>`,
+              )
+              .join("")}
+          </div>`
+            : ""
+        }
+
+        ${
+          coHD
+            ? `
+          <p class="font-semibold text-sm mb-2">💰 Hóa đơn chưa thanh toán (${dep.hoaDon.length})</p>
+          <div class="space-y-2 mb-4">
+            ${dep.hoaDon
+              .map(
+                (h) => `
+              <div class="p-3 bg-red-50 border border-red-200 rounded-xl text-xs">
+                <strong>Hóa đơn #${h.id}</strong> — ${(h.tongTien || 0).toLocaleString("vi-VN")}₫
+              </div>`,
+              )
+              .join("")}
+          </div>`
+            : ""
+        }
+
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-xs text-sky-800 mb-4">
+          <p class="font-semibold mb-1"><i class="fas fa-lightbulb mr-1"></i>Cách xử lý:</p>
+          <p>1. Đăng nhập bằng <strong>Bác sĩ phụ trách</strong> → menu <strong>"Lịch khám của tôi"</strong> → bấm <strong>"Đã khám xong"</strong> hoặc <strong>Hủy</strong>.</p>
+          <p>2. Hoặc <strong>Bệnh nhân</strong> vào <strong>"Lịch khám"</strong> → <strong>Hủy lịch</strong>.</p>
+          <p>3. Hóa đơn: Bệnh nhân vào <strong>"Hóa đơn"</strong> → thanh toán VietQR.</p>
+          <p>4. Quay lại đây xóa tài khoản.</p>
+        </div>
+
+        <button onclick="closeModal()" class="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold">Đã hiểu</button>`;
+            document.getElementById("modal").classList.remove("hidden");
+          } catch (_) {
+            showToast(err.message, "error");
+          }
+        }
+      }
+      function moThemTK() {
+        document.getElementById("modalContent").innerHTML =
+          `<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Thêm tài khoản</h3><button onclick="closeModal()" class="text-gray-400"><i class="fas fa-times"></i></button></div><div class="space-y-3"><div><label class="text-xs font-medium mb-1 block">Họ tên *</label><input id="newName" class="w-full px-4 py-2.5 border rounded-xl"></div><div><label class="text-xs font-medium mb-1 block">SĐT *</label><input id="newPhone" class="w-full px-4 py-2.5 border rounded-xl"></div><div><label class="text-xs font-medium mb-1 block">Vai trò *</label><select id="newRole" class="w-full px-4 py-2.5 border rounded-xl"><option value="BacSi">Bác sĩ</option><option value="TuVanVien">Tư vấn viên</option><option value="Admin">Admin</option></select></div><div><label class="text-xs font-medium mb-1 block">Chuyên khoa</label><input id="newCK" class="w-full px-4 py-2.5 border rounded-xl"></div><button onclick="themTK()" class="w-full py-3 bg-medical-600 text-white rounded-xl font-semibold">Tạo</button></div>`;
+        document.getElementById("modal").classList.remove("hidden");
+      }
+      async function themTK() {
+        if (!validateField("newName", "Họ tên")) return;
+
+        if (!validateField("newPhone", "SĐT")) return;
+        try {
+          await api.createStaff({
+            hoTen: document.getElementById("newName").value,
+            soDienThoai: document.getElementById("newPhone").value,
+            vaiTro: document.getElementById("newRole").value,
+            chuyenKhoa: document.getElementById("newCK").value,
+            matKhau: "123456",
+          });
+          closeModal();
+          showToast("Đã tạo! (MK: 123456)", "success");
+          navigate("quanLyTK");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function renderNhatKy() {
+        document.getElementById("pageTitle").textContent = "Nhật ký hoạt động";
+        const logs = await api.getSystemLogs();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm"><div class="space-y-2">${
+            logs.length === 0
+              ? '<p class="text-center text-gray-500 py-10"><i class="fas fa-inbox text-3xl mb-2 block"></i>Không có nhật ký</p>'
+              : logs
+                  .slice(0, 50)
+                  .map(
+                    (l) =>
+                      `<div class="flex items-start gap-3 p-3 border rounded-xl"><div class="w-10 h-10 bg-gradient-to-br from-medical-500 to-teal-500 rounded-xl flex items-center justify-center text-white flex-shrink-0"><i class="fas fa-history"></i></div><div class="flex-1"><div class="flex items-center gap-2"><p class="font-semibold text-sm">${l.tenUser || "Hệ thống"}</p><span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded">${l.hanhDong || ""}</span></div><p class="text-sm text-gray-600 mt-1">${l.chiTiet || ""}</p><p class="text-xs text-gray-400 mt-1">${l.thoiGian || ""}</p></div></div>`,
+                  )
+                  .join("")
+          }</div></div>`;
+      }
+
+      async function renderThongKe() {
+        document.getElementById("pageTitle").textContent = "Thống kê";
+        const stats = await api.getStatistics();
+        document.getElementById("contentArea").innerHTML =
+          `<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"><div class="bg-gradient-to-br from-medical-500 to-medical-600 text-white rounded-2xl p-4 md:p-5 shadow-sm"><p class="text-white/80 text-xs md:text-sm">Doanh thu</p><p class="text-lg md:text-2xl font-bold mt-1">${(stats.tongDoanhThu || 0).toLocaleString("vi-VN")}₫</p></div><div class="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl p-4 md:p-5 shadow-sm"><p class="text-white/80 text-xs md:text-sm">Lịch đã xác nhận</p><p class="text-lg md:text-2xl font-bold mt-1">${stats.lichDaXacNhan || 0}</p></div><div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-4 md:p-5 shadow-sm"><p class="text-white/80 text-xs md:text-sm">YC chờ xử lý</p><p class="text-lg md:text-2xl font-bold mt-1">${stats.yeuCauChoXuLy || 0}</p></div><div class="bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-2xl p-4 md:p-5 shadow-sm"><p class="text-white/80 text-xs md:text-sm">Bệnh nhân</p><p class="text-lg md:text-2xl font-bold mt-1">${stats.soBenhNhan || 0}</p></div></div>`;
+      }
+
+      // ============ HELPER: ĐỊNH DẠNG NGÀY & BADGE ============
+      function fmtDT(v) {
+        if (!v) return "—";
+        const d = new Date(v);
+        if (isNaN(d)) return String(v);
+        const p = (n) => String(n).padStart(2, "0");
+        return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+      }
+      function fmtD(v) {
+        if (!v) return "—";
+        const d = new Date(v);
+        if (isNaN(d)) return String(v);
+        const p = (n) => String(n).padStart(2, "0");
+        return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+      function toLocalInput(v) {
+        const d = new Date(v);
+        if (isNaN(d)) return "";
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+      }
+      const LICH_LABEL = {
+        ChoXacNhan: ["Chờ xác nhận", "bg-amber-100 text-amber-700"],
+        DaXacNhan: ["Đã xác nhận", "bg-emerald-100 text-emerald-700"],
+        HoanThanh: ["Đã hoàn thành", "bg-sky-100 text-sky-700"],
+        DaHuy: ["Đã hủy", "bg-gray-200 text-gray-600"],
+        BSTuChoi: ["Bác sĩ từ chối", "bg-red-100 text-red-700"],
+      };
+      function badgeLich(tt) {
+        const [text, cls] = LICH_LABEL[tt] || [tt, "bg-gray-100 text-gray-600"];
+        return `<span class="px-2 py-1 ${cls} rounded-full text-xs font-medium whitespace-nowrap">${text}</span>`;
+      }
+
+      // ============ BÁC SĨ: XEM TẤT CẢ LỊCH KHÁM (Hình 116) ============
+      async function renderLichKhamBS() {
+        document.getElementById("pageTitle").textContent = "Lịch khám của tôi";
+        document.getElementById("pageSubtitle").textContent =
+          "Tất cả lịch khám — xác nhận, hoàn thành, hủy";
+
+        const list = await api.getDoctorAppointments();
+
+        const dem = (tt) => list.filter((l) => l.trangThai === tt).length;
+        const tabs = [
+          ["all", `Tất cả (${list.length})`],
+          ["ChoXacNhan", `Chờ xác nhận (${dem("ChoXacNhan")})`],
+          ["DaXacNhan", `Đã xác nhận (${dem("DaXacNhan")})`],
+          ["HoanThanh", `Hoàn thành (${dem("HoanThanh")})`],
+          ["DaHuy", `Đã hủy (${dem("DaHuy") + dem("BSTuChoi")})`],
+        ];
+
+        const cards = list
+          .map((l) => {
+            let nut = "";
+            if (l.trangThai === "ChoXacNhan") {
+              nut = `
+        <button onclick="doiTrangThaiLich(${l.id},'DaXacNhan','lichKhamBS')" class="flex-1 py-2 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600">Xác nhận</button>
+        <button onclick="doiTrangThaiLich(${l.id},'BSTuChoi','lichKhamBS')" class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600">Từ chối</button>`;
+            } else if (l.trangThai === "DaXacNhan") {
+              nut = `
+        <button onclick="doiTrangThaiLich(${l.id},'HoanThanh','lichKhamBS')" class="flex-1 py-2 bg-sky-600 text-white rounded-lg text-sm font-medium hover:bg-sky-700"><i class="fas fa-check-double mr-1"></i>Đã khám xong</button>
+        <button onclick="moSuaLich(${l.id})" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200"><i class="fas fa-edit"></i></button>
+        <button onclick="doiTrangThaiLich(${l.id},'DaHuy','lichKhamBS')" class="px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100"><i class="fas fa-times"></i></button>`;
+            } else {
+              nut = `<p class="text-xs text-gray-400 italic py-2">Lịch đã kết thúc — không thể thay đổi</p>`;
+            }
+
+            return `
+      <div class="lich-card p-4 border border-gray-100 rounded-xl mb-3 hover:shadow-md transition" data-tt="${l.trangThai}">
+        <div class="flex justify-between items-start mb-3 gap-2">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 bg-medical-100 text-medical-700 rounded-full flex items-center justify-center font-bold flex-shrink-0">${(l.tenBenhNhan || "B").charAt(0)}</div>
+            <div class="min-w-0">
+              <p class="font-bold text-sm truncate">${l.tenBenhNhan}</p>
+              <p class="text-xs text-gray-500">${l.sdtBenhNhan || "—"}</p>
+            </div>
+          </div>
+          ${badgeLich(l.trangThai)}
+        </div>
+        <div class="space-y-1 text-sm text-gray-700 mb-3">
+          <p><i class="fas fa-clock text-medical-500 mr-2 w-4"></i>${fmtDT(l.thoiGian)}</p>
+          <p><i class="fas fa-map-marker-alt text-medical-500 mr-2 w-4"></i>${l.diaChi || "—"}</p>
+          ${l.ghiChu ? `<p><i class="fas fa-sticky-note text-amber-500 mr-2 w-4"></i>${l.ghiChu}</p>` : ""}
+        </div>
+        <div class="flex gap-2">${nut}</div>
+      </div>`;
+          })
+          .join("");
+
+        document.getElementById("contentArea").innerHTML = `
+    <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm">
+      <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
+        ${tabs
+          .map(
+            ([k, t], i) => `
+          <button onclick="locLichBS('${k}', this)" class="lich-tab px-3 py-1.5 ${i === 0 ? "bg-medical-600 text-white" : "bg-gray-100 text-gray-700"} rounded-full text-xs font-medium whitespace-nowrap">${t}</button>
+        `,
+          )
+          .join("")}
+      </div>
+      <div id="dsLichBS">
+        ${list.length === 0 ? '<p class="text-center text-gray-500 py-10"><i class="fas fa-calendar-times text-3xl mb-2 block"></i>Chưa có lịch khám nào</p>' : cards}
+      </div>
+    </div>`;
+      }
+
+      function locLichBS(tt, btn) {
+        document.querySelectorAll(".lich-tab").forEach((b) => {
+          b.classList.remove("bg-medical-600", "text-white");
+          b.classList.add("bg-gray-100", "text-gray-700");
+        });
+        btn.classList.remove("bg-gray-100", "text-gray-700");
+        btn.classList.add("bg-medical-600", "text-white");
+
+        document.querySelectorAll(".lich-card").forEach((c) => {
+          const s = c.dataset.tt;
+          const hien =
+            tt === "all" ||
+            (tt === "DaHuy" ? s === "DaHuy" || s === "BSTuChoi" : s === tt);
+          c.style.display = hien ? "" : "none";
+        });
+      }
+
+      // ============ ĐỔI TRẠNG THÁI LỊCH (dùng chung) ============
+      async function doiTrangThaiLich(id, trangThai, trangQuayLai) {
+        const ten = (LICH_LABEL[trangThai] || [trangThai])[0];
+        let lyDo = "";
+
+        if (["DaHuy", "BSTuChoi"].includes(trangThai)) {
+          lyDo = prompt(`Lý do ${ten.toLowerCase()} lịch khám #${id}:`, "");
+          if (lyDo === null) return; // bấm Cancel
+        } else {
+          if (!confirm(`Xác nhận chuyển lịch #${id} sang trạng thái "${ten}"?`))
+            return;
+        }
+
+        try {
+          await api.setAppointmentStatus(id, trangThai, lyDo);
+          showToast(`Đã cập nhật: ${ten}`, "success");
+          navigate(trangQuayLai || "lichKham");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      // ============ CHỈNH SỬA LỊCH KHÁM (Hình 111) ============
+      let __lichDangSua = null;
+      async function moSuaLich(id) {
+        try {
+          // Lấy lịch từ API phù hợp với vai trò
+          const ds =
+            currentUser.vaiTro === "BacSi"
+              ? await api.getDoctorAppointments()
+              : await api.getMyAppointments();
+          const l = ds.find((x) => x.id === id);
+          if (!l) return showToast("Không tìm thấy lịch khám", "error");
+          __lichDangSua = l;
+
+          document.getElementById("modalContent").innerHTML = `
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">Sửa lịch khám #${l.id}</h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+      </div>
+      <div class="bg-medical-50 rounded-xl p-3 text-sm mb-4">
+        <p><strong>Bệnh nhân:</strong> ${l.tenBenhNhan || "—"}</p>
+        <p><strong>Bác sĩ:</strong> ${l.tenBacSi || currentUser.hoTen}</p>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-medium text-gray-700 mb-1 block">Thời gian khám *</label>
+          <input id="slTG" type="datetime-local" value="${toLocalInput(l.thoiGian)}" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-medical-500">
+        </div>
+        <div>
+          <label class="text-xs font-medium text-gray-700 mb-1 block">Địa chỉ khám *</label>
+          <input id="slDC" type="text" value="${(l.diaChi || "").replace(/"/g, "&quot;")}" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-medical-500">
+        </div>
+        <div>
+          <label class="text-xs font-medium text-gray-700 mb-1 block">Ghi chú</label>
+          <textarea id="slGC" rows="2" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-medical-500">${l.ghiChu || ""}</textarea>
+        </div>
+        <button onclick="luuSuaLich(${l.id})" class="w-full py-3 bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-xl font-semibold">
+          <i class="fas fa-save mr-2"></i>Lưu thay đổi
+        </button>
+        <button onclick="closeModal()" class="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium">Hủy</button>
+      </div>`;
+          document.getElementById("modal").classList.remove("hidden");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      async function luuSuaLich(id) {
+        if (!validateField("slTG", "Thời gian khám")) return;
+        if (!validateField("slDC", "Địa chỉ khám")) return;
+        try {
+          await api.updateAppointment(id, {
+            thoiGian: document.getElementById("slTG").value,
+            diaChi: document.getElementById("slDC").value.trim(),
+            ghiChu: document.getElementById("slGC").value.trim(),
+          });
+          closeModal();
+          showToast("Đã cập nhật lịch khám", "success");
+          navigate(currentUser.vaiTro === "BacSi" ? "lichKhamBS" : "lichKham");
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+
+      // UTILS
+      function closeModal() {
+        document.getElementById("modal").classList.add("hidden");
+      }
+      function showToast(msg, type = "success") {
+        const t = document.getElementById("toast");
+        const icon = document.getElementById("toastIcon");
+        document.getElementById("toastMsg").textContent = msg;
+
+        const base =
+          "fixed top-6 right-4 md:right-6 z-[100] bg-white shadow-2xl rounded-xl p-4 " +
+          "flex items-start gap-3 border-l-4 transition-all duration-300 transform ";
+
+        if (type === "error") {
+          icon.className =
+            "fas fa-times-circle text-xl text-red-500 flex-shrink-0 mt-0.5";
+          t.className = base + "border-red-500 max-w-md";
+        } else if (type === "info") {
+          icon.className =
+            "fas fa-info-circle text-xl text-sky-500 flex-shrink-0 mt-0.5";
+          t.className = base + "border-sky-500 max-w-md";
+        } else {
+          icon.className =
+            "fas fa-check-circle text-xl text-emerald-500 flex-shrink-0 mt-0.5";
+          t.className = base + "border-emerald-500 max-w-md";
+        }
+
+        t.classList.remove("translate-x-full");
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(
+          () => t.classList.add("translate-x-full"),
+          5000,
+        );
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        if (api.token && api.user) {
+          currentUser = api.user;
+          enterApp();
+        }
+      });
+    </script>
+  </body>
+</html>
